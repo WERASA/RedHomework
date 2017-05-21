@@ -51,14 +51,9 @@ ArrayList<String>urls=new ArrayList<>();
     private int videoTimeLong;
     private String videoTimeString;
     private SurfaceHolder surfaceHolder;
-    String fileEx,fileNa,fileName;
-    int downLoadFileSize,fileSize;
-    Notification notification;
-    NotificationManager notificationManager;
-    private RemoteViews notificationViews;
+     Button returnB;
     Button download;
-    Timer timer;
-    TimerTask task;
+
    private  DownLoadService.DownloadBinder downloadBinder;
 
 private ServiceConnection connection=new ServiceConnection() {
@@ -96,6 +91,8 @@ private ServiceConnection connection=new ServiceConnection() {
         next = (Button) findViewById(R.id.next);
         back = (Button) findViewById(R.id.back);
         download=(Button)findViewById(R.id.download) ;
+        returnB=(Button)findViewById(R.id.returnB);
+        returnB.setOnClickListener(this);
         surfaceHolder.addCallback(new SurfaceCallback());
         progressBar=(ProgressBar)findViewById(R.id.progressBar);
         Intent intent=new Intent(this, DownLoadService.class);
@@ -236,7 +233,11 @@ private ServiceConnection connection=new ServiceConnection() {
                   path=urls.get(position);
                   playVideo();
               }
-
+          case R.id.returnB:
+              Intent i=new Intent(VideoPlayer.this,MainActivity.class);
+              ActivityCollector.removeActivity(this);
+              startActivity(i);
+              break;
       }
     }
 
