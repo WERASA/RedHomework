@@ -3,20 +3,18 @@ package com.example.a700_15isk.redhomework;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.content.Context;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.icu.text.SimpleDateFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
+import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -28,14 +26,7 @@ import android.widget.TextView;
 
 import com.example.a700_15isk.redhomework.Tools.ActivityCollector;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Timer;
@@ -68,53 +59,19 @@ ArrayList<String>urls=new ArrayList<>();
     Button download;
     Timer timer;
     TimerTask task;
-    Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what){
-                case 0:
-                    notificationManager=(NotificationManager)VideoPlayer.this.getSystemService(Context.NOTIFICATION_SERVICE);
-//                    notification.tickerText="少女祈祷中。。。。";
-                    notificationViews=new RemoteViews(VideoPlayer.this.getPackageName(),R.layout.notifition_view);
-                    break;
-                case 1:
-                    float size = (float) downLoadFileSize * 100 / (float) fileSize;
-                    DecimalFormat format = new DecimalFormat("0.00");
-                    String progress=format.format(size);
-                    notificationViews.setTextViewText(R.id.progressBar, "已下载" + progress + "%");
-                    notificationViews.setProgressBar(R.id.progressBar, 100, (int) size, false);
-                    notification.contentView = notificationViews;
-                    notificationManager.notify(1, notification);
-                    break;
-                case 2:
-                    notificationViews.setTextViewText(R.id.progressBar, "下载完成");
-                    notificationViews.setProgressBar(R.id.progressBar, 100, 100, false);
-                    notification.contentView = notificationViews;
-                    notification.tickerText = "下载完成";
-                    notificationManager.notify(1, notification);
-                    if (timer != null && task != null) {
-                        timer.cancel();
-                        task.cancel();
-                        timer = null;
-                        task = null;
-                    }
+   private  DownLoadService.DownloadBinder downloadBinder;
 
-
-            }
-        }
-    };
-    private void handlerTask() {
-        timer = new Timer();
-        task = new TimerTask() {
-
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(1);
-            }
-        };
-        timer.schedule(task, 500, 500);
+private ServiceConnection connection=new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+     downloadBinder=(DownLoadService.DownloadBinder)service;
     }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+
+    }
+};
 
 
     @Override
@@ -141,6 +98,10 @@ ArrayList<String>urls=new ArrayList<>();
         download=(Button)findViewById(R.id.download) ;
         surfaceHolder.addCallback(new SurfaceCallback());
         progressBar=(ProgressBar)findViewById(R.id.progressBar);
+        Intent intent=new Intent(this, DownLoadService.class);
+        startService(intent);
+        bindService(intent,connection,BIND_AUTO_CREATE);
+
 
 
 
@@ -234,15 +195,8 @@ ArrayList<String>urls=new ArrayList<>();
       switch (v.getId())
       {
           case R.id.download:
-              Log.d("tag", String.valueOf(Environment.getExternalStorageDirectory()));
-          new Thread(new Runnable() {
-              @Override
-              public void run() {
+              downloadBinder.startDownload(path);
 
-                 downLoad(path, "/storage/emulated/0/video");
-
-              }
-          }).start();
           break;
           case R.id.button_stop:
               if (mediaPlayer.isPlaying()){
@@ -291,7 +245,7 @@ ArrayList<String>urls=new ArrayList<>();
 
         @RequiresApi(api = Build.VERSION_CODES.N)
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            // TODO Auto-generated method stub
+
             if (progress >= 0) {
 
                 if (fromUser) {
@@ -303,12 +257,12 @@ ArrayList<String>urls=new ArrayList<>();
         }
 
         public void onStartTrackingTouch(SeekBar seekBar) {
-            // TODO Auto-generated method stub
+
 
         }
 
         public void onStopTrackingTouch(SeekBar seekBar) {
-            // TODO Auto-generated method stub
+
 
         }
 
@@ -336,51 +290,5 @@ ArrayList<String>urls=new ArrayList<>();
 
         }
     }
-    public void downLoad(String url,String path){
-        fileName=url.substring(url.lastIndexOf("/")+1);
-        HttpURLConnection httpURLConnection = null;
-        try {
-            URL mUrl = new URL(url);
-            httpURLConnection = (HttpURLConnection) mUrl.openConnection();
-            httpURLConnection.setConnectTimeout(5000);
-            httpURLConnection.setReadTimeout(10000);
 
-
-            InputStream inputStream = httpURLConnection.getInputStream();
-            this.fileSize=httpURLConnection.getContentLength();
-            if (this.fileSize <= 0) throw new RuntimeException("无法获知文件大小 ");
-            if (inputStream==null){throw  new RuntimeException("Stream is null");}
-            File filePath = new File(path);
-            File file = new File(path+fileName);
-            if(!filePath.exists()){
-                filePath.mkdirs();
-            }
-            if(!file.exists()){
-                file.createNewFile();
-            }
-            FileOutputStream fileOutputStream=new FileOutputStream(path+fileName);
-            byte buf[]=new byte[1024];
-            downLoadFileSize=0;
-            Message message=new Message();
-            message.what=0;
-            handler.sendMessage(message);
-            do{
-
-                int numread = inputStream.read(buf);
-                if (numread == -1)
-                {
-                    break;
-                }
-                fileOutputStream.write(buf, 0, numread);
-                downLoadFileSize += numread;
-
-            } while (true);
-
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
