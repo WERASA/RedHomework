@@ -157,7 +157,7 @@ private ServiceConnection connection=new ServiceConnection() {
         stopButton.setOnClickListener(this);
         next.setOnClickListener(this);
         back.setOnClickListener(this);
-       download.setOnClickListener(this);
+        download.setOnClickListener(this);
         mediaPlayer.start();
 
         mediaPlayer.setDisplay(surfaceHolder);
@@ -233,6 +233,7 @@ private ServiceConnection connection=new ServiceConnection() {
                   path=urls.get(position);
                   playVideo();
               }
+              break;
           case R.id.returnB:
               Intent i=new Intent(VideoPlayer.this,MainActivity.class);
               ActivityCollector.removeActivity(this);
