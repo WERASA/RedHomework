@@ -1,8 +1,10 @@
-package com.example.a700_15isk.redhomework.Tools;
+package com.example.a700_15isk.redhomework.Tools.BitmapTool;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+
+import com.example.a700_15isk.redhomework.Tools.BitmapTool.MD5Util;
 
 import java.io.File;
 import java.io.FileInputStream;

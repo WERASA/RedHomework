@@ -1,12 +1,9 @@
-package com.example.a700_15isk.redhomework.Tools;
+package com.example.a700_15isk.redhomework.Tools.BitmapTool;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.ImageView;
-
-import com.example.a700_15isk.redhomework.Tools.LocalCacheUtils;
-import com.example.a700_15isk.redhomework.Tools.MemoryCacheUtils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

@@ -16,4 +16,5 @@ public class Res_body {
     public int hate;
     public String create_time;
     public String text;
+    public String user_icon;
 }

@@ -1,18 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/userContent"/>
-<SurfaceView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/userView"
-    />
-    <view
+    android:background="#ffffff"
+    android:orientation="vertical"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="80dp">
+
+        <ImageView
+            android:id="@+id/author_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/author_icon"
+            android:layout_toRightOf="@id/author_icon"
+            android:text="作者"
+            android:textColor="@android:color/black"
+
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/creat_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2012-01-02:12"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="16dp"
+            android:layout_below="@+id/user_name"
+            android:layout_toRightOf="@+id/author_icon"
+            android:layout_toEndOf="@+id/author_icon" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/user_content"
         android:layout_width="match_parent"
-        android:layout_height="5dp"
-        />
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Hello,world!"
+        android:textColor="#000000" />
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#cccccc" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
+
+
+       <ImageView
+           android:layout_width="match_parent"
+           android:layout_height="200dp"
+           android:id="@+id/first"/>
+
+
+
+        <ImageView
+            android:id="@+id/start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/ic_start"/>
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/comment_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="#ffffff"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+
 </LinearLayout>

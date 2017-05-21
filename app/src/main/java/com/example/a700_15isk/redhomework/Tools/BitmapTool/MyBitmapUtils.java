@@ -1,4 +1,4 @@
-package com.example.a700_15isk.redhomework.Tools;
+package com.example.a700_15isk.redhomework.Tools.BitmapTool;
 
 import android.graphics.Bitmap;
 import android.widget.ImageView;
@@ -26,7 +26,7 @@ public class MyBitmapUtils {
         bitmap=mMemoryCacheUtils.getBitmapFromMemory(url);
         if (bitmap!=null){
             ivPic.setImageBitmap(bitmap);
-            System.out.println("从内存获取图片啦.....");
+
             return;
         }
 
@@ -34,8 +34,6 @@ public class MyBitmapUtils {
         bitmap = mLocalCacheUtils.getBitmapFromLocal(url);
         if(bitmap !=null){
             ivPic.setImageBitmap(bitmap);
-            System.out.println("从本地获取图片啦.....");
-
             mMemoryCacheUtils.setBitmapToMemory(url,bitmap);
             return;
         }

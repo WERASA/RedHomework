@@ -1,4 +1,4 @@
-package com.example.a700_15isk.redhomework.Tools;
+package com.example.a700_15isk.redhomework.Tools.BitmapTool;
 
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;

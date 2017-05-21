@@ -3,6 +3,8 @@ package com.example.a700_15isk.redhomework.Tools;
 import android.os.Handler;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -117,6 +119,10 @@ public class NetWork {
 
         return null;
     }
+
+
+
+
 
     public static String getStringFromInputStream(InputStream inputStream) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
