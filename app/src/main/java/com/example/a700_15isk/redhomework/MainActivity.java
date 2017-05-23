@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,10 +27,43 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     RecyclerView recyclerView;
     Context context;
+    SwipeRefreshLayout refreshLayout;
+    String FIRST_NAME;
+    int PAGE;
+    boolean  isRefresh;
+    VideoAdapter videoAdapter;
     ArrayList<Res_body> res_bodies = new ArrayList<>();
+    LinearLayoutManager layoutManager;
+
+
+    Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 1:
+                    videoAdapter=new VideoAdapter(res_bodies,context);
+                    recyclerView.setAdapter(videoAdapter);
+
+                    recyclerView.setLayoutManager(layoutManager);
+                    break;
+                case 2:
+                    res_bodies.clear();
+                    getVideo(1,1);
+                    videoAdapter.next(res_bodies);
+                    isRefresh=false;
+                    break;
+                case 3:
+                    videoAdapter.next(res_bodies);
+                    isRefresh=false;
+                    break;
+
+            }
+
+        }
+    };
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -38,11 +74,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getVideo();
+        getVideo(1,1);
         context=this;
         verifyPermission(MainActivity.this);
+        layoutManager=new LinearLayoutManager(context);
         recyclerView=(RecyclerView)findViewById(R.id.videoRv);
-
+        refreshLayout=(SwipeRefreshLayout)findViewById(R.id.refresh);
+        refreshLayout.setOnRefreshListener(this);
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -65,8 +103,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public void getVideo(){
-        String url="http://route.showapi.com/255-1?showapi_appid=38549&showapi_sign=0245d802ee3c4a8e85e01df59d442e3f&type=41&title=&page=&";
+    public void getVideo(int PAGE, final int type){
+        FIRST_NAME="http://route.showapi.com/255-1?showapi_appid=38549&showapi_sign=0245d802ee3c4a8e85e01df59d442e3f&type=41&title=&page=";
+        this.PAGE=PAGE;
+        String url=FIRST_NAME+PAGE;
 
         NetWork.get(url, new NetWork.Callback() {
             @Override
@@ -90,11 +130,10 @@ public class MainActivity extends AppCompatActivity {
                         res_body.user_icon=jsonObject.getString("profile_image");
                         res_bodies.add(res_body);
                         Log.d("Test", res_bodies.get(i).text);
+                        Message message = new Message();
+                        message.what = type;
+                        handler.sendMessage(message);
                     }
-                    VideoAdapter videoAdapter=new VideoAdapter(res_bodies,context);
-                    recyclerView.setAdapter(videoAdapter);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(context));
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -106,13 +145,30 @@ public class MainActivity extends AppCompatActivity {
         if (connectivityManager != null) {
             NetworkInfo info = connectivityManager.getActiveNetworkInfo();
             if (info != null) {
-
                 return info.isAvailable();
             }
         }
 
 
         return false;
+    }
+
+
+
+
+    @Override
+    public void onRefresh() {
+        if (isRefresh){
+            refreshLayout.setRefreshing(false);
+            return;
+        }
+        isRefresh=true;
+        refreshLayout.setRefreshing(false);
+                    Message message=new Message();
+                    message.what=2;
+                    handler.sendMessage(message);
+
+
     }
 
 

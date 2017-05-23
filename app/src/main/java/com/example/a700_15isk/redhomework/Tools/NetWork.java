@@ -1,6 +1,7 @@
 package com.example.a700_15isk.redhomework.Tools;
 
 import android.os.Handler;
+import android.os.Looper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,10 +23,13 @@ public class NetWork {
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 final String response = NetWork.getFormUrl(url);
                 handler.post(new Runnable() {
+
                     @Override
                     public void run() {
+
                         callback.onRespond(response);
                     }
                 });
